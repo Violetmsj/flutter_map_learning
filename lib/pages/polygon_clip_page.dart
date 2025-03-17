@@ -8,6 +8,13 @@ import '../utils/util_random_color.dart';
 
 typedef HitValue = ({String polygonKey, String testValue});
 
+enum PolygonEditState {
+  idle, // 初始状态
+  selecting, // 选择多边形状态
+  drawing, // 绘制分割线状态
+  clipping, // 正在分割状态
+}
+
 class PolygonClipPage extends StatefulWidget {
   const PolygonClipPage({super.key});
 
@@ -19,6 +26,21 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
   List<LatLng> clipLinepPints = []; //存储分割线的点
   var startSelect = false;
   var startClip = false;
+
+  // 替换原来的布尔变量
+  PolygonEditState _editState = PolygonEditState.idle;
+
+  // 添加状态管理方法
+  void _handleStateChange(PolygonEditState newState) {
+    setState(() {
+      if (newState == PolygonEditState.idle) {
+        _clickGons = [];
+        clipLinepPints.clear();
+      }
+      _editState = newState;
+    });
+  }
+
   final LayerHitNotifier<HitValue> _hitNotifier = ValueNotifier(null);
   // List<HitValue>? _prevHitValues; // 保存上一次点击的polygon
   List<Polygon<HitValue>>? _clickGons = [];
@@ -49,6 +71,29 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
   // 这是个Map映射，用于快速找到对应的polygon
   late final _polygons =
       Map.fromEntries(_polygonsRaw.map((e) => MapEntry(e.hitValue, e)));
+  // 将分割逻辑抽取为单独的方法
+  void _handleClipping() {
+    if (clipLinepPints.isEmpty) return;
+
+    setState(() {
+      var readyPolygon = _clickGons![0].points.toMapsToolkitList();
+      var readyClipLine = clipLinepPints.toMapsToolkitList();
+
+      var clipResult = splitPolygonByPolyline(readyPolygon, readyClipLine);
+      _testGons = clipResult.indexed.map((e) {
+        var points = e.$2.toLatLng2List();
+        return Polygon(
+          points: points,
+          color: getRandomColor(),
+          borderStrokeWidth: 4,
+        );
+      }).toList();
+
+      // 重置状态
+      _handleStateChange(PolygonEditState.idle);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
@@ -59,7 +104,7 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
         maxZoom: 18,
         onTap: (tapPosition, point) {
           print("enter map tap");
-          if (startSelect && _clickGons!.isNotEmpty) {
+          if (_editState == PolygonEditState.drawing) {
             setState(() {
               clipLinepPints.add(point);
             });
@@ -87,68 +132,29 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        setState(() {
-                          startSelect ? _clickGons = [] : '';
-                          startSelect = !startSelect;
-                        });
+                        _handleStateChange(_editState == PolygonEditState.idle
+                            ? PolygonEditState.selecting
+                            : PolygonEditState.idle);
                       },
-                      child: startSelect ? Text('选择中') : Text('开始选择'),
+                      child: Text(_editState == PolygonEditState.selecting
+                          ? '选择中'
+                          : '开始选择'),
                     ),
                     SizedBox(width: 20),
-                    // FloatingActionButton(
-                    //   onPressed: () {},
-                    //   child: !startClip ? Text('开始分割') : Text('结束分割'),
-                    // )
                     ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          startClip = !startClip;
-                          if (startClip &&
-                              _clickGons!.isNotEmpty &&
-                              clipLinepPints.isNotEmpty) {
-                            print("is ready to clip");
-                            // 调用切割工具
-                            List<LatLng> polygonPointstest =
-                                _clickGons![0].points;
-                            print(polygonPointstest);
-
-                            if (_clickGons != null && _clickGons!.isNotEmpty) {
-                              // final clippedPolygons =
-                              //     PolygonClipUtils.clipPolygon(
-                              //   _clickGons![0],
-                              //   clipLinepPints,
-                              // );
-                              // if (clippedPolygons != null) {
-                              //   _testGons = clippedPolygons.toList();
-                              //   clipLinepPints.clear();
-                              //   setState(() {});
-                              // }
-                              var readyPolygon =
-                                  _clickGons![0].points.toMapsToolkitList();
-                              var readyClipLine =
-                                  clipLinepPints.toMapsToolkitList();
-                              // maps_toolkit.LatLng
-                              var clipResult = splitPolygonByPolyline(
-                                  readyPolygon, readyClipLine);
-                              _testGons = clipResult.indexed.map((
-                                e,
-                              ) {
-                                var points = e.$2.toLatLng2List();
-                                return Polygon(
-                                  points: points,
-                                  // borderColor:
-                                  //     e.$1 == 0 ? Colors.pink : Colors.green,
-                                  color: getRandomColor(),
-                                  borderStrokeWidth: 4,
-                                );
-                              }).toList();
-                              setState(() {});
-                              print(clipResult);
-                            }
-                          }
-                        });
-                      },
-                      child: Text('点击分割'),
+                      onPressed: _clickGons?.isEmpty ?? true
+                          ? null
+                          : () {
+                              if (_editState == PolygonEditState.drawing) {
+                                // 执行分割操作
+                                _handleClipping();
+                              } else {
+                                _handleStateChange(PolygonEditState.drawing);
+                              }
+                            },
+                      child: Text(_editState == PolygonEditState.drawing
+                          ? '完成分割'
+                          : '开始分割'),
                     ),
                   ],
                 ),
@@ -157,7 +163,7 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
           ],
         ),
         GestureDetector(
-          onTap: startSelect && _clickGons!.isEmpty
+          onTap: _editState == PolygonEditState.selecting
               ? () {
                   final hitValues = _hitNotifier.value?.hitValues.toList();
                   final clickPolygons = hitValues?.map((v) {
