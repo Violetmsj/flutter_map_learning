@@ -4,7 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as maps_toolkit;
 import '../utils/util_clip_polygon.dart';
 import "../utils/util_latlng_converter.dart";
-import 'dart:math';
+import '../utils/util_random_color.dart';
 
 typedef HitValue = ({String polygonKey, String testValue});
 
@@ -16,21 +16,6 @@ class PolygonClipPage extends StatefulWidget {
 }
 
 class _PolygonClipPageState extends State<PolygonClipPage> {
-  // 随机颜色
-  Color getRandomColor() {
-    final colors = [
-      const Color(0xFFFF0000), // 红色
-      const Color(0xFF00FF00), // 绿色
-      const Color(0xFF0000FF), // 蓝色
-      const Color(0xFFFFFF00), // 黄色
-      const Color(0xFF800080), // 紫色
-      const Color(0xFFFFA500), // 橙色
-      const Color(0xFF00FFFF), // 青色
-      const Color(0xFFFF1493), // 深粉色
-    ];
-    return colors[Random().nextInt(colors.length)];
-  }
-
   List<LatLng> clipLinepPints = []; //存储分割线的点
   var startSelect = false;
   var startClip = false;
@@ -100,7 +85,7 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    FloatingActionButton(
+                    ElevatedButton(
                       onPressed: () {
                         setState(() {
                           startSelect ? _clickGons = [] : '';
