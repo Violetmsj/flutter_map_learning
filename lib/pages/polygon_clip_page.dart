@@ -8,7 +8,7 @@ import '../utils/util_random_color.dart';
 
 typedef HitValue = ({String polygonKey, String testValue});
 
-enum PolygonEditState {
+enum PolygonClipState {
   idle, // 初始状态
   selecting, // 选择多边形状态
   drawing, // 绘制分割线状态
@@ -23,21 +23,19 @@ class PolygonClipPage extends StatefulWidget {
 }
 
 class _PolygonClipPageState extends State<PolygonClipPage> {
-  List<LatLng> clipLinepPints = []; //存储分割线的点
-  var startSelect = false;
-  var startClip = false;
+  List<LatLng> clipLinepPoints = []; //存储分割线的点
 
   // 替换原来的布尔变量
-  PolygonEditState _editState = PolygonEditState.idle;
+  PolygonClipState _polygonClipState = PolygonClipState.idle;
 
   // 添加状态管理方法
-  void _handleStateChange(PolygonEditState newState) {
+  void _handleStateChange(PolygonClipState newState) {
     setState(() {
-      if (newState == PolygonEditState.idle) {
+      if (newState == PolygonClipState.idle) {
         _clickGons = [];
-        clipLinepPints.clear();
+        clipLinepPoints.clear();
       }
-      _editState = newState;
+      _polygonClipState = newState;
     });
   }
 
@@ -73,11 +71,11 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
       Map.fromEntries(_polygonsRaw.map((e) => MapEntry(e.hitValue, e)));
   // 将分割逻辑抽取为单独的方法
   void _handleClipping() {
-    if (clipLinepPints.isEmpty) return;
+    if (clipLinepPoints.isEmpty) return;
 
     setState(() {
       var readyPolygon = _clickGons![0].points.toMapsToolkitList();
-      var readyClipLine = clipLinepPints.toMapsToolkitList();
+      var readyClipLine = clipLinepPoints.toMapsToolkitList();
 
       var clipResult = splitPolygonByPolyline(readyPolygon, readyClipLine);
       _testGons = clipResult.indexed.map((e) {
@@ -90,7 +88,7 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
       }).toList();
 
       // 重置状态
-      _handleStateChange(PolygonEditState.idle);
+      _handleStateChange(PolygonClipState.idle);
     });
   }
 
@@ -104,9 +102,9 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
         maxZoom: 18,
         onTap: (tapPosition, point) {
           print("enter map tap");
-          if (_editState == PolygonEditState.drawing) {
+          if (_polygonClipState == PolygonClipState.drawing) {
             setState(() {
-              clipLinepPints.add(point);
+              clipLinepPoints.add(point);
             });
           }
         },
@@ -132,27 +130,30 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        _handleStateChange(_editState == PolygonEditState.idle
-                            ? PolygonEditState.selecting
-                            : PolygonEditState.idle);
+                        _handleStateChange(
+                            _polygonClipState == PolygonClipState.idle
+                                ? PolygonClipState.selecting
+                                : PolygonClipState.idle);
                       },
-                      child: Text(_editState == PolygonEditState.selecting
-                          ? '选择中'
-                          : '开始选择'),
+                      child: Text(
+                          _polygonClipState == PolygonClipState.selecting
+                              ? '选择中'
+                              : '开始选择'),
                     ),
                     SizedBox(width: 20),
                     ElevatedButton(
                       onPressed: _clickGons?.isEmpty ?? true
                           ? null
                           : () {
-                              if (_editState == PolygonEditState.drawing) {
+                              if (_polygonClipState ==
+                                  PolygonClipState.drawing) {
                                 // 执行分割操作
                                 _handleClipping();
                               } else {
-                                _handleStateChange(PolygonEditState.drawing);
+                                _handleStateChange(PolygonClipState.drawing);
                               }
                             },
-                      child: Text(_editState == PolygonEditState.drawing
+                      child: Text(_polygonClipState == PolygonClipState.drawing
                           ? '完成分割'
                           : '开始分割'),
                     ),
@@ -163,7 +164,7 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
           ],
         ),
         GestureDetector(
-          onTap: _editState == PolygonEditState.selecting
+          onTap: _polygonClipState == PolygonClipState.selecting
               ? () {
                   final hitValues = _hitNotifier.value?.hitValues.toList();
                   final clickPolygons = hitValues?.map((v) {
@@ -187,10 +188,10 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
           ),
         ),
         PolylineLayer<Object>(
-          polylines: clipLinepPints.length >= 2
+          polylines: clipLinepPoints.length >= 2
               ? [
                   Polyline<Object>(
-                    points: clipLinepPints,
+                    points: clipLinepPoints,
                     color: Colors.red,
                     strokeWidth: 3.0,
                   ),
@@ -198,7 +199,7 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
               : [],
         ),
         MarkerLayer(
-          markers: clipLinepPints
+          markers: clipLinepPoints
               .map((point) => Marker(
                     point: point,
                     width: 20,
