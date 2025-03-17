@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as maps_toolkit;
+import 'package:flutter_map_line_editor/flutter_map_line_editor.dart';
+import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
 import '../utils/util_clip_polygon.dart';
 import "../utils/util_latlng_converter.dart";
 import '../utils/util_random_color.dart';
@@ -23,7 +25,7 @@ class PolygonClipPage extends StatefulWidget {
 }
 
 class _PolygonClipPageState extends State<PolygonClipPage> {
-  List<LatLng> clipLinepPoints = []; //存储分割线的点
+  final clipLinepPoints = <LatLng>[]; //存储分割线的点
 
   // 替换原来的布尔变量
   PolygonClipState _polygonClipState = PolygonClipState.idle;
@@ -38,6 +40,9 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
       _polygonClipState = newState;
     });
   }
+
+  // 折线编辑器，用于管理折线的编辑操作，包括添加、移动点等功能
+  late PolyEditor polyEditor;
 
   final LayerHitNotifier<HitValue> _hitNotifier = ValueNotifier(null);
   // List<HitValue>? _prevHitValues; // 保存上一次点击的polygon
@@ -88,12 +93,37 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
       }).toList();
 
       // 重置状态
-      _handleStateChange(PolygonClipState.idle);
+      // _handleStateChange(PolygonClipState.idle);
     });
   }
 
   @override
+  void initState() {
+    polyEditor = PolyEditor(
+      addClosePathMarker: false,
+      points: clipLinepPoints,
+      pointIcon: const Icon(Icons.crop_square, size: 23),
+      callbackRefresh: (LatLng? _) {
+        setState(() {
+          if (clipLinepPoints.length >= 2) {
+            // 只有在有两个或更多点时才执行分割
+            _handleClipping();
+          }
+        });
+      },
+    );
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // 存储地图上所有折线的列表
+    final polyLines = <Polyline>[];
+    // 创建一个测试用的折线对象，设置颜色为深橙色，使用polyPoints作为点位数据
+    final testPolyline =
+        Polyline(color: Colors.deepOrange, points: clipLinepPoints);
+    polyLines.add(testPolyline);
     return FlutterMap(
       options: MapOptions(
         initialCenter: LatLng(39, 116),
@@ -101,11 +131,12 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
         minZoom: 3,
         maxZoom: 18,
         onTap: (tapPosition, point) {
-          print("enter map tap");
           if (_polygonClipState == PolygonClipState.drawing) {
-            setState(() {
-              clipLinepPoints.add(point);
-            });
+            // setState(() {
+            //   clipLinepPoints.add(point);
+            // });
+
+            polyEditor.add(testPolyline.points, point);
           }
         },
       ),
@@ -187,36 +218,27 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
             polygons: [..._polygonsRaw, ...?_clickGons],
           ),
         ),
-        PolylineLayer<Object>(
-          polylines: clipLinepPoints.length >= 2
-              ? [
-                  Polyline<Object>(
-                    points: clipLinepPoints,
-                    color: Colors.red,
-                    strokeWidth: 3.0,
-                  ),
-                ]
-              : [],
-        ),
-        MarkerLayer(
-          markers: clipLinepPoints
-              .map((point) => Marker(
-                    point: point,
-                    width: 20,
-                    height: 20,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
-                    ),
-                  ))
-              .toList(),
-        ),
         PolygonLayer(
           polygons: _resultGons,
-        )
+        ),
+        PolylineLayer(polylines: polyLines),
+        DragMarkers(markers: polyEditor.edit()),
+        // MarkerLayer(
+        //   markers: clipLinepPoints
+        //       .map((point) => Marker(
+        //             point: point,
+        //             width: 20,
+        //             height: 20,
+        //             child: Container(
+        //               decoration: BoxDecoration(
+        //                 color: Colors.red,
+        //                 shape: BoxShape.circle,
+        //                 border: Border.all(color: Colors.white, width: 2),
+        //               ),
+        //             ),
+        //           ))
+        //       .toList(),
+        // ),
       ],
     );
   }
