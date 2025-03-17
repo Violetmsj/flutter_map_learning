@@ -41,8 +41,8 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
 
   final LayerHitNotifier<HitValue> _hitNotifier = ValueNotifier(null);
   // List<HitValue>? _prevHitValues; // 保存上一次点击的polygon
-  List<Polygon<HitValue>>? _clickGons = [];
-  List<Polygon> _testGons = [];
+  List<Polygon<HitValue>>? _clickGons = []; //被选中的被切割的polygon
+  List<Polygon> _testGons = []; //对_clickGons切割完毕的产生的结果polygon
   final _polygonsRaw = <Polygon<HitValue>>[
     Polygon(
       points: const [
