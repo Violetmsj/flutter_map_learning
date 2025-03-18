@@ -3,6 +3,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:turf/turf.dart' as turf;
+import "package:maps_toolkit/maps_toolkit.dart" as maps_toolkit;
+import '../utils/util_latlng_converter.dart';
 
 class DrawPolygonPage extends StatefulWidget {
   const DrawPolygonPage({super.key});
@@ -173,13 +175,35 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
                       border: Border.all(color: Colors.blue),
                     ),
                     child: Text(
-                      '${calculatePolygonArea(points).toStringAsFixed(2)} km²',
+                      '${calculatePolygonArea(points).toStringAsFixed(2)} 亩',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ),
                 ),
             ],
           ),
+          MarkerLayer(
+            markers: [
+              if (currentPoints.length >= 3)
+                Marker(
+                  point: calculateCentroid(currentPoints),
+                  width: 100,
+                  height: 30,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.blue),
+                    ),
+                    child: Text(
+                      '${calculatePolygonArea(currentPoints).toStringAsFixed(2)} 亩',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
+            ],
+          )
         ],
       ),
     );
