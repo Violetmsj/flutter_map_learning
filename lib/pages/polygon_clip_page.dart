@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:maps_toolkit/maps_toolkit.dart' as maps_toolkit;
 import 'package:flutter_map_line_editor/flutter_map_line_editor.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
-import '../utils/util_clip_polygon.dart';
-import "../utils/util_latlng_converter.dart";
 import '../utils/util_random_color.dart';
+import '../utils/geo_calculation_utils.dart';
 
 typedef HitValue = ({String polygonKey, String testValue});
 
@@ -82,7 +80,8 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
       var readyPolygon = _clickGons![0].points.toMapsToolkitList();
       var readyClipLine = clipLinepPoints.toMapsToolkitList();
 
-      var clipResult = splitPolygonByPolyline(readyPolygon, readyClipLine);
+      var clipResult = GeoCalculationUtils.splitPolygonByPolyline(
+          readyPolygon, readyClipLine);
       _resultGons = clipResult.indexed.map((e) {
         var points = e.$2.toLatLng2List();
         return Polygon(
