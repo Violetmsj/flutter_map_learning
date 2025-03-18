@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:turf/turf.dart' as turf;
+import '../utils/geo_calculation_utils.dart';
 
 class DrawPolygonPage extends StatefulWidget {
   const DrawPolygonPage({super.key});
@@ -18,33 +17,6 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
   List<LatLng> currentPoints = [];
   //地图控制器
   final mapController = MapController();
-
-  // 计算多边形面积
-  double calculatePolygonArea(List<LatLng> points) {
-    if (points.length < 3) return 0;
-    double area = 0;
-    // 转换为 Position 格式的坐标数组
-    final coordinates = points
-        .map((point) => turf.Position(point.longitude, point.latitude))
-        .toList();
-    // 闭合多边形（首尾相连）
-    coordinates.add(coordinates.first);
-    // 创建 turf 中的多边形
-    var polygon = turf.Polygon(coordinates: [coordinates]);
-    area = turf.area(polygon) as double;
-    return area / 1000000;
-  }
-
-  // 计算多边形质心
-  LatLng calculateCentroid(List<LatLng> points) {
-    double latitude = 0;
-    double longitude = 0;
-    for (var point in points) {
-      latitude += point.latitude;
-      longitude += point.longitude;
-    }
-    return LatLng(latitude / points.length, longitude / points.length);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +141,7 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
             markers: [
               for (var points in completedPolygons)
                 Marker(
-                  point: calculateCentroid(points),
+                  point: GeoCalculationUtils.calculateCentroid(points),
                   width: 100,
                   height: 30,
                   child: Container(
@@ -180,13 +152,35 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
                       border: Border.all(color: Colors.blue),
                     ),
                     child: Text(
-                      '${calculatePolygonArea(points).toStringAsFixed(2)} km²',
+                      '${GeoCalculationUtils.calculatePolygonArea(points.toMapsToolkitList()).toStringAsFixed(2)} 亩',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ),
                 ),
             ],
           ),
+          MarkerLayer(
+            markers: [
+              if (currentPoints.length >= 3)
+                Marker(
+                  point: GeoCalculationUtils.calculateCentroid(currentPoints),
+                  width: 100,
+                  height: 30,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.blue),
+                    ),
+                    child: Text(
+                      '${GeoCalculationUtils.calculatePolygonArea(currentPoints.toMapsToolkitList()).toStringAsFixed(2)} 亩',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
+            ],
+          )
         ],
       ),
     );

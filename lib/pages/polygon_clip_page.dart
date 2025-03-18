@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:maps_toolkit/maps_toolkit.dart' as maps_toolkit;
 import 'package:flutter_map_line_editor/flutter_map_line_editor.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
-import '../utils/util_clip_polygon.dart';
-import "../utils/util_latlng_converter.dart";
 import '../utils/util_random_color.dart';
+import '../utils/geo_calculation_utils.dart';
 
 typedef HitValue = ({String polygonKey, String testValue});
 
@@ -82,7 +80,8 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
       var readyPolygon = _clickGons![0].points.toMapsToolkitList();
       var readyClipLine = clipLinepPoints.toMapsToolkitList();
 
-      var clipResult = splitPolygonByPolyline(readyPolygon, readyClipLine);
+      var clipResult = GeoCalculationUtils.splitPolygonByPolyline(
+          readyPolygon, readyClipLine);
       _resultGons = clipResult.indexed.map((e) {
         var points = e.$2.toLatLng2List();
         return Polygon(
@@ -102,7 +101,7 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
     polyEditor = PolyEditor(
       addClosePathMarker: false,
       points: clipLinepPoints,
-      pointIcon: const Icon(Icons.crop_square, size: 23),
+      pointIcon: const Icon(Icons.circle, size: 23),
       callbackRefresh: (LatLng? _) {
         setState(() {
           if (clipLinepPoints.length >= 2) {
@@ -121,8 +120,8 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
     // 存储地图上所有折线的列表
     final polyLines = <Polyline>[];
     // 创建一个测试用的折线对象，设置颜色为深橙色，使用polyPoints作为点位数据
-    final testPolyline =
-        Polyline(color: Colors.deepOrange, points: clipLinepPoints);
+    final testPolyline = Polyline(
+        color: Colors.deepOrange, points: clipLinepPoints, strokeWidth: 5);
     polyLines.add(testPolyline);
     return FlutterMap(
       options: MapOptions(
@@ -186,7 +185,7 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
                             },
                       child: Text(_polygonClipState == PolygonClipState.drawing
                           ? '完成分割'
-                          : '开始分割'),
+                          : '开始划线'),
                     ),
                   ],
                 ),
@@ -222,23 +221,106 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
           polygons: _resultGons,
         ),
         PolylineLayer(polylines: polyLines),
+        MarkerLayer(
+          markers: _resultGons.isNotEmpty
+              ? _resultGons.map((itemPolygon) {
+                  return Marker(
+                    point: GeoCalculationUtils.calculateCentroid(
+                        itemPolygon.points),
+                    width: 100,
+                    height: 30,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        // borderRadius: BorderRadius.circular(4),
+                        // border: Border.all(color: Colors.blue),
+                      ),
+                      child: Text(
+                        '${GeoCalculationUtils.calculatePolygonArea(itemPolygon.points.toMapsToolkitList()).toStringAsFixed(2)} 亩',
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.black),
+                      ),
+                    ),
+                  );
+                }).toList()
+              : [],
+        ),
         DragMarkers(markers: polyEditor.edit()),
-        // MarkerLayer(
-        //   markers: clipLinepPoints
-        //       .map((point) => Marker(
-        //             point: point,
-        //             width: 20,
-        //             height: 20,
-        //             child: Container(
-        //               decoration: BoxDecoration(
-        //                 color: Colors.red,
-        //                 shape: BoxShape.circle,
-        //                 border: Border.all(color: Colors.white, width: 2),
-        //               ),
-        //             ),
-        //           ))
-        //       .toList(),
-        // ),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
+        DragMarkers(markers: polyEditor.edit()),
       ],
     );
   }
