@@ -222,22 +222,51 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
         ),
         PolylineLayer(polylines: polyLines),
         DragMarkers(markers: polyEditor.edit()),
-        // MarkerLayer(
-        //   markers: clipLinepPoints
-        //       .map((point) => Marker(
-        //             point: point,
-        //             width: 20,
-        //             height: 20,
-        //             child: Container(
-        //               decoration: BoxDecoration(
-        //                 color: Colors.red,
-        //                 shape: BoxShape.circle,
-        //                 border: Border.all(color: Colors.white, width: 2),
-        //               ),
-        //             ),
-        //           ))
-        //       .toList(),
-        // ),
+        MarkerLayer(
+          // markers: [
+          //   if (_resultGons.isNotEmpty)
+          //     Marker(
+          //       point: GeoCalculationUtils.calculateCentroid(
+          //           _resultGons[0].points),
+          //       width: 100,
+          //       height: 30,
+          //       child: Container(
+          //         padding: const EdgeInsets.all(4),
+          //         decoration: BoxDecoration(
+          //           color: Colors.white,
+          //           borderRadius: BorderRadius.circular(4),
+          //           border: Border.all(color: Colors.blue),
+          //         ),
+          //         child: Text(
+          //           '${GeoCalculationUtils.calculatePolygonArea(currentPoints.toMapsToolkitList()).toStringAsFixed(2)} 亩',
+          //           style: const TextStyle(fontSize: 12),
+          //         ),
+          //       ),
+          //     ),
+          // ],
+          markers: _resultGons.isNotEmpty
+              ? _resultGons.map((itemPolygon) {
+                  return Marker(
+                    point: GeoCalculationUtils.calculateCentroid(
+                        itemPolygon.points),
+                    width: 100,
+                    height: 30,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: Colors.blue),
+                      ),
+                      child: Text(
+                        '${GeoCalculationUtils.calculatePolygonArea(itemPolygon.points.toMapsToolkitList()).toStringAsFixed(2)} 亩',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  );
+                }).toList()
+              : [],
+        )
       ],
     );
   }
