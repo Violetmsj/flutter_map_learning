@@ -18,17 +18,6 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
   //地图控制器
   final mapController = MapController();
 
-  // 计算多边形质心
-  LatLng calculateCentroid(List<LatLng> points) {
-    double latitude = 0;
-    double longitude = 0;
-    for (var point in points) {
-      latitude += point.latitude;
-      longitude += point.longitude;
-    }
-    return LatLng(latitude / points.length, longitude / points.length);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,7 +141,7 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
             markers: [
               for (var points in completedPolygons)
                 Marker(
-                  point: calculateCentroid(points),
+                  point: GeoCalculationUtils.calculateCentroid(points),
                   width: 100,
                   height: 30,
                   child: Container(
@@ -174,7 +163,7 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
             markers: [
               if (currentPoints.length >= 3)
                 Marker(
-                  point: calculateCentroid(currentPoints),
+                  point: GeoCalculationUtils.calculateCentroid(currentPoints),
                   width: 100,
                   height: 30,
                   child: Container(

@@ -99,4 +99,15 @@ class GeoCalculationUtils {
 
     return result;
   }
+
+  // 计算多边形质心
+  static latlong2.LatLng calculateCentroid(List<latlong2.LatLng> points) {
+    double latitude = 0;
+    double longitude = 0;
+    for (var point in points) {
+      latitude += point.latitude;
+      longitude += point.longitude;
+    }
+    return latlong2.LatLng(latitude / points.length, longitude / points.length);
+  }
 }
