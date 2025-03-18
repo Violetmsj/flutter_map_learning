@@ -15,8 +15,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Obtain a list of the available cameras on the device.
-  final cameras;
-  final firstCamera;
+  final List<CameraDescription> cameras;
+  final CameraDescription firstCamera;
   cameras = await availableCameras();
   firstCamera = cameras.first;
 
