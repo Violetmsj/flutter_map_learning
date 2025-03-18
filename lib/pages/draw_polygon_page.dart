@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:turf/turf.dart' as turf;
-import "package:maps_toolkit/maps_toolkit.dart" as maps_toolkit;
-import '../utils/util_latlng_converter.dart';
+import '../utils/geo_calculation_utils.dart';
 
 class DrawPolygonPage extends StatefulWidget {
   const DrawPolygonPage({super.key});
@@ -20,15 +17,6 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
   List<LatLng> currentPoints = [];
   //地图控制器
   final mapController = MapController();
-
-  // 计算多边形面积
-  double calculatePolygonArea(List<LatLng> points) {
-    var area =
-        maps_toolkit.SphericalUtil.computeArea(points.toMapsToolkitList())
-            .toDouble();
-    area = area * 0.0015;
-    return area;
-  }
 
   // 计算多边形质心
   LatLng calculateCentroid(List<LatLng> points) {
@@ -175,7 +163,7 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
                       border: Border.all(color: Colors.blue),
                     ),
                     child: Text(
-                      '${calculatePolygonArea(points).toStringAsFixed(2)} 亩',
+                      '${GeoCalculationUtils.calculatePolygonArea(points.toMapsToolkitList()).toStringAsFixed(2)} 亩',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ),
@@ -197,7 +185,7 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
                       border: Border.all(color: Colors.blue),
                     ),
                     child: Text(
-                      '${calculatePolygonArea(currentPoints).toStringAsFixed(2)} 亩',
+                      '${GeoCalculationUtils.calculatePolygonArea(currentPoints.toMapsToolkitList()).toStringAsFixed(2)} 亩',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ),
