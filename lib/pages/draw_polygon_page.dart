@@ -21,18 +21,11 @@ class _DrawPolygonPageState extends State<DrawPolygonPage> {
 
   // 计算多边形面积
   double calculatePolygonArea(List<LatLng> points) {
-    if (points.length < 3) return 0;
-    double area = 0;
-    // 转换为 Position 格式的坐标数组
-    final coordinates = points
-        .map((point) => turf.Position(point.longitude, point.latitude))
-        .toList();
-    // 闭合多边形（首尾相连）
-    coordinates.add(coordinates.first);
-    // 创建 turf 中的多边形
-    var polygon = turf.Polygon(coordinates: [coordinates]);
-    area = turf.area(polygon) as double;
-    return area / 1000000;
+    var area =
+        maps_toolkit.SphericalUtil.computeArea(points.toMapsToolkitList())
+            .toDouble();
+    area = area * 0.0015;
+    return area;
   }
 
   // 计算多边形质心
