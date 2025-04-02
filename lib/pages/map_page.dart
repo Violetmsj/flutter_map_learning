@@ -83,8 +83,11 @@ class _MyHomePageState extends State<MapPage> {
       ),
       body: FlutterMap(
         options: MapOptions(
-          initialCenter: LatLng(39, 116), // Center the map over London
-          initialZoom: 9.2,
+          initialCenter:
+              LatLng(44.343009, 86.011265), // Center the map over London
+          initialZoom: 17,
+          minZoom: 3,
+          maxZoom: 20,
           onTap: (tapPosition, point) {
             print('经纬度: ${point.latitude}, ${point.longitude}');
             // 这里可以处理地图点击事件
@@ -99,8 +102,6 @@ class _MyHomePageState extends State<MapPage> {
           //   enableMultiFingerGestureRace: true,
           //   flags: InteractiveFlag.all,
           // ),
-          minZoom: 3,
-          maxZoom: 18,
         ),
         children: [
           TileLayer(

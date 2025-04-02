@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_directions/flutter_map_directions.dart';
 import 'package:flutter_map_learning/Model/path_model.dart';
 import 'package:flutter_map_learning/utils/collectPolyline.dart';
+import 'package:flutter_map_learning/utils/coordinate_converter.dart';
 import 'package:latlong2/latlong.dart';
 
 class MarkerPathPage extends StatefulWidget {
@@ -17,10 +18,14 @@ class _MyHomePageState extends State<MarkerPathPage> {
   List<LatLng> tappedPoints = [];
   List<LatLng> pathPolyline = [];
   void onTap() async {
+    var startPointTdt = LatLng(44.34122616578489, 86.00880049695027);
+    var endPointTdt = LatLng(44.29606124761691, 86.01923091364735);
+    var startPointGd = CoordinateConverter.wgs84ToGcj02(startPointTdt);
+    var endPointGd = CoordinateConverter.wgs84ToGcj02(endPointTdt);
     //科创大厦
-    var startPoint = '86.011265,44.343009';
+    var startPoint = '${startPointGd.longitude},${startPointGd.latitude}';
     //西公园
-    var endPoint = '86.0216195,44.297074';
+    var endPoint = '${endPointGd.longitude},${endPointGd.latitude}';
 
     var dio = Dio();
     //获取高德路径规划数据
@@ -32,8 +37,12 @@ class _MyHomePageState extends State<MarkerPathPage> {
       "show_fields": "polyline"
     });
     var res = PathModel.fromJson(resJson.data);
+    pathPolyline = PolylineCollector.collectPathPoints(res);
     setState(() {
-      pathPolyline = PolylineCollector.collectPathPoints(res);
+      pathPolyline = pathPolyline.map((e) {
+        var res = CoordinateConverter.gcj02ToWgs84(e);
+        return res;
+      }).toList();
     });
     print(pathPolyline);
   }
