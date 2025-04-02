@@ -15,14 +15,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Obtain a list of the available cameras on the device.
-  final List<CameraDescription> cameras;
-  final CameraDescription firstCamera;
-  cameras = await availableCameras();
-  firstCamera = cameras.first;
+  // final List<CameraDescription> cameras;
+  // final CameraDescription firstCamera;
+  // cameras = await availableCameras();
+  // firstCamera = cameras.first;
 
-  // Get a specific camera from the list of available cameras.
-
-  getCameraController.setFirstCamera(firstCamera);
+  // getCameraController.setFirstCamera(firstCamera);
   runApp(MyApp());
 }
 
