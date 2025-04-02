@@ -5,6 +5,7 @@ import 'package:flutter_map_learning/pages/draw_polyline_page.dart';
 import 'package:flutter_map_learning/pages/img_picker_page.dart';
 import 'package:flutter_map_learning/pages/map_page.dart';
 import 'package:flutter_map_learning/pages/marker_clustering_page.dart';
+import 'package:flutter_map_learning/pages/marker_path_page.dart';
 import 'package:flutter_map_learning/pages/polygon_clip_page.dart';
 import 'package:flutter_map_learning/pages/polyline_edit.dart';
 import 'package:get/get.dart';
@@ -72,6 +73,12 @@ class HomePage extends StatelessWidget {
                 Get.to(PolylineEdit());
               },
               child: Text("polygon_picker"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Get.to(MarkerPathPage());
+              },
+              child: Text("路径规划"),
             ),
           ],
         ),
