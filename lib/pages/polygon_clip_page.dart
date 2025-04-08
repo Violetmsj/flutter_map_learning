@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:flutter_map_line_editor/flutter_map_line_editor.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
-import '../utils/util_random_color.dart';
+import 'package:flutter_map_line_editor/flutter_map_line_editor.dart';
+import 'package:latlong2/latlong.dart';
+
 import '../utils/geo_calculation_utils.dart';
+import '../utils/util_random_color.dart';
 
 typedef HitValue = ({String polygonKey, String testValue});
 
@@ -153,7 +154,7 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 10, bottom: 20, right: 20),
-              child: Container(
+              child: SizedBox(
                 width: 300,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -246,80 +247,6 @@ class _PolygonClipPageState extends State<PolygonClipPage> {
                 }).toList()
               : [],
         ),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
-        DragMarkers(markers: polyEditor.edit()),
         DragMarkers(markers: polyEditor.edit()),
       ],
     );
