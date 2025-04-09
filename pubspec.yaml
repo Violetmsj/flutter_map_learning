@@ -53,6 +53,7 @@ dependencies:
   flutter_image_compress: ^2.4.0
   dio: ^5.8.0+1
   flutter_map_directions: ^0.0.8
+  flutter_flavor: ^3.1.4
 
 dev_dependencies:
   flutter_test:

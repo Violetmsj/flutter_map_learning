@@ -1,11 +1,8 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_map_learning/app_binding.dart';
 import 'package:flutter_map_learning/app_pages.dart';
-
 import 'package:flutter_map_learning/get_controller/get_camera_controller.dart';
-
 import 'package:get/get.dart';
 
 Future<void> main() async {
@@ -13,6 +10,15 @@ Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
   // can be called before `runApp()`
   WidgetsFlutterBinding.ensureInitialized();
+  FlavorConfig(
+    name: "PROD",
+    color: Colors.red,
+    location: BannerLocation.topStart,
+    variables: {
+      "counter": 5,
+      "baseUrl": "https://www.prod.com",
+    },
+  );
 
   // Obtain a list of the available cameras on the device.
   // final List<CameraDescription> cameras;
@@ -33,16 +39,18 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return FlavorBanner(
+      child: GetMaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        initialBinding: AppBinding(),
+        initialRoute: "/",
+        getPages: AppPages.routes,
+        // home: HomePage(),
       ),
-      initialBinding: AppBinding(),
-      initialRoute: "/",
-      getPages: AppPages.routes,
-      // home: HomePage(),
     );
   }
 }
