@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map_learning/flavors/flavor_config.dart';
 import 'package:flutter_map_learning/pages/camera_page.dart';
 import 'package:flutter_map_learning/pages/draw_polygon_page.dart';
 import 'package:flutter_map_learning/pages/draw_polyline_page.dart';
@@ -24,6 +25,12 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            ElevatedButton(
+              onPressed: () {
+                Get.snackbar("当前环境", FlavorConfig.shared.appName);
+              },
+              child: Text("版本提示"),
+            ),
             ElevatedButton(
               onPressed: () {
                 Get.to(MapPage());
