@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 class AppBinding extends Bindings {
   @override
   void dependencies() {
-    // TODO: implement dependencies
     Get.lazyPut(() => GetCameraController());
     Get.lazyPut(() => LoadingController(), fenix: true);
   }

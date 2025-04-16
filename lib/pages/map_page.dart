@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_learning/Data/polygon_data.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapPage extends StatefulWidget {
@@ -11,6 +12,12 @@ class MapPage extends StatefulWidget {
 
 class _MyHomePageState extends State<MapPage> {
   List<LatLng> tappedPoints = [];
+  List<Polygon> staticPolygons = PolygonData.staticPolygons(1);
+  final textController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,8 +90,12 @@ class _MyHomePageState extends State<MapPage> {
       ),
       body: FlutterMap(
         options: MapOptions(
-          initialCenter: LatLng(39, 116), // Center the map over London
-          initialZoom: 9.2,
+          initialCenter:
+              LatLng(44.343009, 86.011265), // Center the map over London
+          // initialZoom: 17,
+          initialZoom: 17,
+          minZoom: 3,
+          maxZoom: 20,
           onTap: (tapPosition, point) {
             print('经纬度: ${point.latitude}, ${point.longitude}');
             // 这里可以处理地图点击事件
@@ -99,8 +110,6 @@ class _MyHomePageState extends State<MapPage> {
           //   enableMultiFingerGestureRace: true,
           //   flags: InteractiveFlag.all,
           // ),
-          minZoom: 3,
-          maxZoom: 18,
         ),
         children: [
           TileLayer(
@@ -121,19 +130,31 @@ class _MyHomePageState extends State<MapPage> {
             markers: markers,
           ),
           PolygonLayer(
-            polygons: [
-              Polygon(
-                points: [
-                  LatLng(38.689659112194434, 115.6547666511192),
-                  LatLng(38.66811304415809, 116.24120214743067),
-                  LatLng(38.37625020796615, 115.89707923274737)
-                ],
-                color: Colors.blue.withValues(alpha: 0.4),
-                borderColor: Colors.amber, // 添加边框颜色
-                borderStrokeWidth: 2, //
-              ),
-            ],
+            polygons: staticPolygons,
           ),
+          Column(
+            children: [
+              TextField(
+                controller: textController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    print(textController.text);
+                    late int res;
+
+                    res = int.parse(textController.text);
+
+                    setState(() {
+                      staticPolygons = PolygonData.staticPolygons(res);
+                    });
+                  },
+                  child: Text("set"))
+            ],
+          )
         ],
       ),
     );
